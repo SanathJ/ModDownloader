@@ -1,10 +1,10 @@
 {
   "name": "moddownloader",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Make sure [Python 3.9](https://www.python.org/downloads/) is installed.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "full": "node . && python modDownloader.py"
   },
   "author": "",
   "license": "ISC",
