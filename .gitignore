@@ -1,0 +1,5 @@
+.vscode
+files/
+node_modules/
+.eslintrc.json
+links.csv
