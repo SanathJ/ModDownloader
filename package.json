@@ -1,6 +1,6 @@
 {
   "name": "moddownloader",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Make sure [Python 3.9](https://www.python.org/downloads/) is installed.",
   "main": "index.js",
   "scripts": {

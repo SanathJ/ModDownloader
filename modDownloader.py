@@ -1,30 +1,49 @@
 import wget
 import csv
 import os
-import requests
 import time
 
-def downloadFile(url):
-    r = requests.get(url)
-    r.raise_for_status()
-    print(r.status_code, wget.filename_from_url(url))
-    with open("./files/" + wget.filename_from_url(url), "wb") as file:
-        file.write(r.content)
+import aiohttp
+import asyncio
+
+from aiofile import async_open
 
 
-print(f"started at {time.strftime('%X')}")
+async def downloadFile(pair, session):
+    try:
+        async with session.get(url=pair[1]) as response:
+            async with async_open("./files/" + wget.filename_from_url(pair[1]), "wb") as file:
+                await file.write(await response.read())
+                print(pair[0], response.status, pair[1], sep='\t')
+
+    except Exception as e:
+        print(f"Unable to download from url {pair[1]} due to {e.__class__}.")
+
+async def main(pairs):
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=None)) as session:
+        ret = await asyncio.gather(*[downloadFile(pair, session) for pair in pairs])
+        print(f"Completed all {len(ret)} async calls")
+
+start = time.time()
 
 try:
     os.mkdir("./files")
 except FileExistsError:
     pass
 
+URLIndexPairs = []
+
 with open("links.csv") as csvfile:
     reader = csv.reader(csvfile)
-    i = 0
+    i = 1
     for line in reader:
-        print(i, end=' ')
-        downloadFile(line[0])
+        URLIndexPairs.append((i, line[0]))
         i = i + 1
 
-print(f"finished at {time.strftime('%X')}")
+loop = asyncio.get_event_loop()
+loop.set_debug(True)
+loop.slow_callback_duration = 0.3
+loop.run_until_complete(main(URLIndexPairs))
+
+end = time.time()
+print(f"finished in {end - start}s")
