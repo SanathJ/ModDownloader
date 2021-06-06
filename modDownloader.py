@@ -7,9 +7,13 @@ import aiohttp
 import asyncio
 
 from aiofile import async_open
+from os import path
 
 
 async def downloadFile(pair, session):
+    if path.isfile("./files/" + wget.filename_from_url(pair[1])):
+        return
+
     try:
         async with session.get(url=pair[1]) as response:
             async with async_open("./files/" + wget.filename_from_url(pair[1]), "wb") as file:
