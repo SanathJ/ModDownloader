@@ -55,7 +55,9 @@ async function findCDNLink(projectID, fileID) {
     const fileList = JSON.parse(await res.text());
     for (const file of fileList) {
         if(file.id == fileID) {
-            return file.downloadUrl;
+            let str = file.downloadUrl.replace('https://edge', 'https://media');
+            str = str.replace('+', '%2B');
+            return str;
         }
     }
 }

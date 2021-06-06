@@ -9,6 +9,16 @@ import asyncio
 from aiofile import async_open
 from os import path, stat
 
+from math import ceil
+
+import traceback
+
+
+async def downloadPartial(url, session, start, end):
+    headers = {'Range': f'bytes={start}-{end}'}
+    async with session.get(url=url, headers=headers) as response:
+        return await response.read()
+
 
 async def downloadFile(pair, session):
     filePath = "./files/" + wget.filename_from_url(pair[1])
@@ -17,13 +27,22 @@ async def downloadFile(pair, session):
         return
 
     try:
-        async with session.get(url=pair[1]) as response:
-            async with async_open(filePath, "wb") as file:
-                await file.write(await response.read())
-                print(pair[0], response.status, pair[1], sep='\t')
+        
+        length = 0
+        chunk_size = 3000000
+
+        async with session.head(url=pair[1]) as response:
+            length = response.headers['content-length']
+
+        res = await asyncio.gather(*[downloadPartial(pair[1], session, i * chunk_size, (i + 1) * chunk_size - 1) for i in range(0, ceil(int(length) / chunk_size))])
+
+        async with async_open(filePath, 'wb') as fd:
+            await fd.write(b''.join(res))
+            print(pair[0], response.status, pair[1], sep='\t')
 
     except Exception as e:
-        print(f"Unable to download from url {pair[1]} due to {e.__class__}.")
+        print(traceback.format_exc(), pair[1])
+
 
 async def main(pairs):
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=None)) as session:
