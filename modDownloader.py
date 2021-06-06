@@ -53,7 +53,7 @@ async def downloadFile(pair, session):
             await fd.write(b''.join(res))
             print(pair[0], response.status, pair[1], sep='\t')
 
-    except:
+    except BaseException:
         print(traceback.format_exc(), pair[1])
 
 
