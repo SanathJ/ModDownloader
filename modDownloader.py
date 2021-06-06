@@ -36,7 +36,7 @@ async def downloadFile(pair, session):
             await fd.write(b''.join(res))
             print(pair[0], response.status, pair[1], sep='\t')
 
-    except Exception as e:
+    except:
         print(traceback.format_exc(), pair[1])
 
 
@@ -45,7 +45,7 @@ async def main(pairs):
         ret = await asyncio.gather(*[downloadFile(pair, session) for pair in pairs])
         print(f"Completed all {len(ret)} async calls")
 
-start = time.time()
+startTime = time.time()
 
 try:
     mkdir("./files")
@@ -66,5 +66,5 @@ loop.set_debug(True)
 loop.slow_callback_duration = 0.3
 loop.run_until_complete(main(URLIndexPairs))
 
-end = time.time()
-print(f"finished in {end - start}s")
+endTime = time.time()
+print(f"finished in {endTime - startTime}s")
