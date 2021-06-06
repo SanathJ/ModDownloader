@@ -1,17 +1,13 @@
-import wget
+import asyncio
 import csv
-import os
 import time
+import traceback
+from math import ceil
+from os import path, stat, mkdir
 
 import aiohttp
-import asyncio
-
+import wget
 from aiofile import async_open
-from os import path, stat
-
-from math import ceil
-
-import traceback
 
 
 async def downloadPartial(url, session, start, end):
@@ -27,7 +23,7 @@ async def downloadFile(pair, session):
         return
 
     try:
-        
+
         length = 0
         chunk_size = 3000000
 
@@ -52,7 +48,7 @@ async def main(pairs):
 start = time.time()
 
 try:
-    os.mkdir("./files")
+    mkdir("./files")
 except FileExistsError:
     pass
 
