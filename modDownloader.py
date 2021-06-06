@@ -7,16 +7,18 @@ import aiohttp
 import asyncio
 
 from aiofile import async_open
-from os import path
+from os import path, stat
 
 
 async def downloadFile(pair, session):
-    if path.isfile("./files/" + wget.filename_from_url(pair[1])):
+    filePath = "./files/" + wget.filename_from_url(pair[1])
+
+    if path.isfile(filePath) and stat(filePath).st_size > 1:
         return
 
     try:
         async with session.get(url=pair[1]) as response:
-            async with async_open("./files/" + wget.filename_from_url(pair[1]), "wb") as file:
+            async with async_open(filePath, "wb") as file:
                 await file.write(await response.read())
                 print(pair[0], response.status, pair[1], sep='\t')
 
