@@ -11,12 +11,29 @@ from aiofile import async_open
 
 
 async def downloadPartial(url, session, start, end):
+    """downloads part of a file asynchronously
+
+    Args:
+        url (string): url to file
+        session (aiohttp.ClientSession): session from which to generate request
+        start (int): starting byte (inclusive)
+        end (int): ending byte (inclusive)
+
+    Returns:
+        bytes: chunk of a file
+    """
     headers = {'Range': f'bytes={start}-{end}'}
     async with session.get(url=url, headers=headers) as response:
         return await response.read()
 
 
 async def downloadFile(pair, session):
+    """downloads a file asynchronously with multiple simultaneous streams
+
+    Args:
+        pair (pair): pair of index and url from which to download a file
+        session (aiohttp.ClientSession): session from which to generate request
+    """
     filePath = "./files/" + wget.filename_from_url(pair[1])
 
     if path.isfile(filePath) and stat(filePath).st_size > 1:
