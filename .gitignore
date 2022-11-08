@@ -1,5 +1,5 @@
 .vscode
 files/
-node_modules/
-.eslintrc.json
+final/
 links.csv
+__pycache__/

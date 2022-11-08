@@ -1,9 +1,7 @@
 import asyncio
-import csv
-import time
 import traceback
 from math import ceil
-from os import path, stat, mkdir
+from os import path, stat
 
 import aiohttp
 import wget
@@ -64,34 +62,6 @@ async def download_file(pair, session):
         print(traceback.format_exc(), pair[1])
 
 
-async def main(pairs):
-    async with aiohttp.ClientSession(
-        connector=aiohttp.TCPConnector(limit=None)
-    ) as session:
-        ret = await asyncio.gather(*[download_file(pair, session) for pair in pairs])
-        print(f"Completed all {len(ret)} async calls")
-
-
-start_time = time.time()
-
-try:
-    mkdir("./files")
-except FileExistsError:
-    pass
-
-url_index_pairs = []
-
-with open("links.csv") as csvfile:
-    reader = csv.reader(csvfile)
-    i = 1
-    for line in reader:
-        url_index_pairs.append((i, line[0]))
-        i = i + 1
-
-loop = asyncio.get_event_loop()
-loop.set_debug(True)
-loop.slow_callback_duration = 0.3
-loop.run_until_complete(main(url_index_pairs))
-
-end_time = time.time()
-print(f"finished in {end_time - start_time}s")
+async def download_all_with_index(pairs, session):
+    ret = await asyncio.gather(*[download_file(pair, session) for pair in pairs])
+    print(f"Completed all {len(ret)} async calls")
