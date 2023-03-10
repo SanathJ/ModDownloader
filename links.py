@@ -4,10 +4,17 @@ import asyncio
 
 async def find_CDN_link(mod, session):
     async with session.get(
-        f"https://api.curse.tools/v1/cf/mods/{mod['projectID']}/files/{mod['fileID']}/download-url"
+        f"https://api.curse.tools/v1/cf/mods/{mod['projectID']}/files/{mod['fileID']}"
     ) as res:
 
-        link = (await res.json())["data"].replace("https://edge", "https://media")
+        link = ""
+        try:
+            link = (await res.json())["data"]["downloadUrl"].replace(
+                "https://edge", "https://media"
+            )
+        except KeyError:
+            print(res)
+
         link = link.replace("+", "%2B")
         return link
 
